@@ -1,15 +1,6 @@
 // Run this with node locally 
 // node convertGPIO2LinuxNumber.js GPIO...
 
-if (process.argv.length != 3) {
-	console.log("Usage: node convertGPIO2LinuxNumber.js GPIO...    (e.g. GPIO06, or SDMMC_DAT2)>");
-	process.exit(1);
-}
-
-signalName = process.argv[2];
-
-console.log("Converting " + signalName + " ...");
-
 const pinTable = {
 	"GPIO09": "GPIO3_PS.04",
 	"I2S1_SCLK": "GPIO3_PT.01",
@@ -261,7 +252,7 @@ function similarity(s1, s2) {
 	return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
 }
 
-function printSimilarPins(gpio) {
+function getSimilarPins(gpio) {
 	const closest = [];
 	let closestDist = 0;
 	for (var key in pinTable) {
@@ -276,35 +267,17 @@ function printSimilarPins(gpio) {
 		return similarity(b, gpio) - similarity(a, gpio);
 	})
 
-	console.log(`\nClosest matches for ${gpio}:\n`);
-	for (var i = 0; i < closest.length; i++) {
-		console.log(`${closest[i]} (${Math.round(similarity(closest[i], gpio) * 100)}%)`);
-	}
-}
-
-if (!(signalName in pinTable)) {
-	console.log("ERROR: Signal " + signalName + " does not exist!");
-
-	printSimilarPins(signalName);
-
-	process.exit(1);
-}
-
-const gpioName = pinTable[signalName];
-
-if (gpioName === "SFIO") {
-	console.log("ERROR: Signal " + signalName + " is not a GPIO, but has a special function (SFIO)!");
-	process.exit(1);
+	return closest;
 }
 
 function getLinuxGPIO_Num(gpio) {
-	const temp = gpio.replaceAll("GPIO3_P", "");
+	const temp = gpio.replace("GPIO3_P", "");
 
 	const parts = temp.split(".")
 	const gpioPort = parts[0];
 
 	if (!((gpioPort in portToNumMain) || (gpioPort in portToNumAon))) {
-		console.log("ERROR: GPIO port " + gpioPort + " does not exist!");
+		throw "ERROR: GPIO port " + gpioPort + " does not exist!";
 	}
 
 	const gpioPin = parseInt(parts[1]);
@@ -318,6 +291,51 @@ function getLinuxGPIO_Num(gpio) {
 	}
 }
 
-const linuxNum = getLinuxGPIO_Num(gpioName);
+function convert(signalName) {
+	console.log("Converting " + signalName + " ...");
 
-console.log(gpioName + " has the Linux GPIO Number:  gpio" + linuxNum + "");
+	if (!(signalName in pinTable)) {
+		const closest = getSimilarPins(signalName);
+		let closestStr = '';
+		if (closest.length > 0) {
+			closestStr += `\r\nClosest matches for ${signalName}:`;
+			for (var i = 0; i < closest.length; i++) {
+				closestStr += `\r\n${closest[i]} (${Math.round(similarity(closest[i], signalName) * 100)}%)`;
+			}
+		}
+		throw "ERROR: Signal " + signalName + " does not exist!" + closestStr;
+	}
+
+	const gpioName = pinTable[signalName];
+	if (gpioName === "SFIO") {
+		throw "ERROR: Signal " + signalName + " is not a GPIO, but has a special function (SFIO)!";
+	}
+	return getLinuxGPIO_Num(gpioName);
+}
+
+function convertOnClick() {
+	resultContainer = document.getElementById("result")
+	signalName = document.getElementById("signalName").value;
+	try {
+		gpioNum = convert(signalName);
+		resultContainer.className = "label success";
+		resultContainer.textContent = "GPIO Num: " + gpioNum
+	}
+	catch(err) {
+		console.log(err);
+		resultContainer.className = "label error";
+		resultContainer.textContent = err
+	}
+}
+
+if (typeof process !== 'undefined') {
+	if (process.argv.length != 3) {
+		console.log("Usage: node convertGPIO2LinuxNumber.js GPIO...    (e.g. GPIO06, or SDMMC_DAT2)>");
+		process.exit(1);
+	}
+	
+	let signalName = process.argv[2];
+	linuxNum = convert(signalName);
+	console.log(signalName + " has the Linux GPIO Number:  gpio" + linuxNum + "");	
+}
+

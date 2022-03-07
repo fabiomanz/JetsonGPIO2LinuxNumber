@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JetsonGPIO2LinuxNumber</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+</head>
+
+<body>
+  <section class="flex one two-900 center">
+    <div>
+      <div class="flex one center">
+        <div>
+          <img src="chip-1710300.svg" />
+        </div>
+        <div>
+          <h1>convertGPIO2LinuxNumber</h1>
+          Converts Jetson Xavier NX GPIO Pin name (e.g. GPIO06, or SDMMC_DAT2) to the Linux GPIO Number
+        </div>
+        <form class="" action="#" onsubmit="convertOnClick()">
+          <input id="signalName">
+          <input type="submit" value="Convert"></input>
+        </form>
+        <h2>
+          <span id="result" style="white-space: pre;"></span>
+        </h2>
+      </div>
+      <small>
+        <i>
+          Credits: 
+          <a href="https://github.com/fabiomanz/JetsonGPIO2LinuxNumber">converter</a> by <a href="https://github.com/fabiomanz">fabiomanz</a>,
+          web app by <a href="https://github.com/tknobi">tknobi</a>, 
+          <a href="https://github.com/simonwhitaker/github-fork-ribbon-css">github-fork-ribbon-css</a> by <a href="https://github.com/simonwhitaker">simonwhitaker</a>,
+          image by <a href="https://pixabay.com/users/sinisamaric1-3044277/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1710300">Sinisa Maric</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1710300">Pixabay</a>
+        </i>
+      </small>
+    </div>
+  </section>
+  <a class="github-fork-ribbon" href="https://github.com/fabiomanz/JetsonGPIO2LinuxNumber"
+    data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+  <script src="convertGPIO2LinuxNumber.js"></script>
+</body>
+
+</html>
